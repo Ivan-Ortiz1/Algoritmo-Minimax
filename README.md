@@ -1,64 +1,79 @@
- ## Resumen general del juego
-Tablero de 5x5.
+Gato y Ratón — Juego por turnos (POO)
 
-El ratón empieza en la esquina inferior derecha (4, 4).
+Juego por turnos implementado en Python usando programación orientada a objetos. Diseño modular (clases Juego, Tablero, Personaje / Gato / Ratón, y módulo ia) pensado para escalar: agregar obstáculos, vidas, modos de juego o interfaz gráfica sin romper la arquitectura.
 
-El gato empieza en la esquina superior izquierda (0, 0).
+Características principales
 
-Ambos se mueven alternadamente en las 4 direcciones cardinales.
+Tablero dinámico: filas y columnas configurables por el usuario.
 
-El juego dura un máximo de 20 turnos.
+Posiciones iniciales del gato y del ratón definidas por el usuario (validación incluida).
 
-El ratón gana si sobrevive los 20 turnos sin ser atrapado.
+Turnos máximos configurables.
 
-El gato gana si alcanza al ratón antes.
+IA basada en Minimax con evaluación por distancia Manhattan y elemento de aleatoriedad (70% elige la mejor jugada, 30% aleatorio).
 
-## Descripción paso a paso
-1. 🧱 Tablero
-La función imprimir_tablero muestra el estado del juego:
+Código organizado en módulos y clases para facilitar mantenimiento y testing.
 
-"|G|" para el gato
+Sin dependencias externas (Python estándar).
 
-"|R|" para el ratón
+Estructura del proyecto
+gato_raton/
+│── main.py           # Punto de entrada (interacción con el usuario)
+│── juego.py          # Clase Juego: flujo principal y condiciones de victoria
+│── tablero.py        # Clase Tablero: representación e impresión
+│── personajes.py     # Personaje, Gato, Raton (movimientos válidos, estado)
+│── ia.py             # Minimax y funciones de decisión (mejor movimiento)
+│── README.md         # Este archivo
+│── .gitignore        # Recomendado (ver ejemplo más abajo)
 
-"|.|" para las casillas vacías
+Resumen del diseño (clases y responsabilidades)
 
-## Movimientos válidos
-Ambos personajes pueden moverse:
+Tablero (tablero.py)
 
-Arriba, abajo, izquierda o derecha.
+Mantiene filas, columnas y la matriz base.
 
-No pueden salir del tablero.
+Método imprimir(gato, raton) para mostrar el estado actual.
 
-## Algoritmo Minimax
-El cerebro del juego.
+Personaje (personajes.py)
 
-Objetivo del minimax:
-El ratón intenta maximizar la distancia con el gato (escapar).
+Propiedades: nombre, posicion.
 
-El gato intenta minimizar esa distancia (acercarse y atraparlo).
+Método movimientos_validos(filas, columnas) que devuelve los movimientos cardinales permitidos.
 
-Se usa una profundidad limitada (hasta 5 movimientos en adelante).
+Gato y Raton heredan de Personaje.
 
-Detalles:
-El ratón evalúa sus movimientos posibles y elige el mejor.
+ia (ia.py)
 
-El gato hace lo mismo pero desde su perspectiva.
+minimax(gato, raton, profundidad, es_turno_raton, filas, columnas) — búsqueda Minimax limitada.
 
-70% de las veces toman la mejor decisión, y 30% eligen al azar para agregar variedad.
+mejor_movimiento_raton(...) y mejor_movimiento_gato(...) — seleccionan jugadas (70% óptima, 30% aleatoria).
 
-## Condiciones para terminar el juego
-La función juego_terminado detiene el juego cuando:
+Evaluación: distancia Manhattan entre gato y ratón.
 
-El gato atrapa al ratón (gato == raton).
+Juego (juego.py)
 
-Se alcanzan los 20 turnos y el ratón sigue vivo.
+Inicializa las entidades y el tablero.
 
-## Función principal jugar()
-Controla el flujo del juego:
+Controla el bucle de juego: mover ratón, comprobar colisión, mover gato, imprimir estado, contar turnos y decidir ganador.
 
-Alterna los turnos.
+Comportamiento de la IA (detalles relevantes)
 
-Llama a los movimientos del ratón y luego del gato.
+Si gato.posicion == raton.posicion la evaluación termina (estado terminal).
 
-Muestra el tablero tras cada turno.
+En profundidad 0 la heurística es la distancia Manhattan (|dx| + |dy|).
+
+El ratón busca maximizar la distancia; el gato busca minimizarla.
+
+Profundidades usadas en la implementación actual: ratón 3, gato 5 (puedes cambiarlas en ia.py si quieres más lookahead a costa de tiempo de cómputo).
+
+Para evitar jugadas 100% deterministas se introduce un 30% de jugada aleatoria.
+
+Sugerencias rápidas para extender
+
+Añadir obstaculos en Tablero y filtrar movimientos_validos.
+
+Añadir atributos vidas o puntaje en Personaje o Juego.
+
+Reemplazar la entrada por consola con argumentos CLI (argparse) o con una interfaz (Pygame / web).
+
+Escribir tests unitarios (pytest) para movimientos_validos, minimax y juego_terminado.
